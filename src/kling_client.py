@@ -117,14 +117,48 @@ class KlingClient:
             product_types=["video"],
         )
 
+    def iter_tasks(
+        self,
+        start_time: int,
+        end_time: int,
+        limit: int = 500,
+        statuses: list[str] | None = None,
+        product_types: list[str] | None = None,
+    ):
+        """Yield all matching tasks, following data.next_cursor until has_more is false."""
+        cursor = ""
+        while True:
+            payload = self.list_tasks(
+                start_time=start_time,
+                end_time=end_time,
+                cursor=cursor,
+                limit=limit,
+                statuses=statuses,
+                product_types=product_types,
+            )
+            if payload.get("code") not in (None, 0):
+                raise RuntimeError(
+                    f"Kling API error {payload.get('code')}: {payload.get('message', '')}"
+                )
+
+            data = payload.get("data") or {}
+            for task in data.get("result", []):
+                yield task
+
+            if not data.get("has_more"):
+                break
+            cursor = data.get("next_cursor", "")
+            if not cursor:
+                break
+
     @staticmethod
     def _extract_task(payload: dict) -> dict:
         data = payload.get("data")
         if isinstance(data, list):
             return data[0] if data else {}
         if isinstance(data, dict):
-            # Support both a direct task object and common list wrappers.
-            for key in ("tasks", "items", "list"):
+            # Bulk POST /tasks returns tasks under data.result.
+            for key in ("result", "tasks", "items", "list"):
                 value = data.get(key)
                 if isinstance(value, list):
                     return value[0] if value else {}
