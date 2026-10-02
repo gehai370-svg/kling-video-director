@@ -69,6 +69,54 @@ class KlingClient:
         response.raise_for_status()
         return response.json()
 
+    def list_tasks(
+        self,
+        start_time: int,
+        end_time: int,
+        cursor: str = "",
+        limit: int = 500,
+        statuses: list[str] | None = None,
+        product_types: list[str] | None = None,
+    ) -> dict:
+        """Query Kling tasks in bulk using POST /tasks."""
+        filters = []
+        if statuses:
+            filters.append({"key": "status", "values": statuses})
+        if product_types:
+            filters.append({"key": "product_type", "values": product_types})
+
+        payload = {
+            "start_time": start_time,
+            "end_time": end_time,
+            "cursor": cursor,
+            "limit": limit,
+            "filters": filters,
+        }
+        response = requests.post(
+            self.base_url + self.TASKS_PATH,
+            json=payload,
+            headers=self.headers,
+            timeout=60,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def list_succeeded_videos(
+        self,
+        start_time: int,
+        end_time: int,
+        cursor: str = "",
+        limit: int = 500,
+    ) -> dict:
+        return self.list_tasks(
+            start_time=start_time,
+            end_time=end_time,
+            cursor=cursor,
+            limit=limit,
+            statuses=["succeeded"],
+            product_types=["video"],
+        )
+
     @staticmethod
     def _extract_task(payload: dict) -> dict:
         data = payload.get("data")
