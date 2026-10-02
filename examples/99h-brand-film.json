@@ -1,0 +1,68 @@
+{
+  "project_id": "99h-brand-film-15s",
+  "title": "99H.COM Brand Film",
+  "idea": "A premium 15-second cinematic brand film for 99H.COM. Pure black environment, electric blue light language, elegant high-end technology aesthetic, strong opening hook, controlled escalation, and a clean final brand lockup.",
+  "duration_seconds": 15,
+  "aspect_ratio": "9:16",
+  "style": "premium commercial, cinematic, photorealistic, deep black, electric blue highlights, elegant, minimal",
+  "language": "zh-CN",
+  "max_attempts": 3,
+  "output_filename": "99h-brand-film.mp4",
+  "storyboard": [
+    {
+      "id": "1",
+      "duration": 3,
+      "generation_mode": "text_to_video",
+      "description": "Absolute darkness is suddenly cut by a razor-thin electric-blue beam that races through space and reveals fragments of a premium geometric structure.",
+      "camera": "rapid cinematic push-in from darkness, then controlled deceleration",
+      "motion": "a sharp blue energy streak crosses frame, subtle particles react to its passage",
+      "lighting": "near-black exposure, intense electric-blue rim light, high contrast, volumetric haze",
+      "sound": "deep sub hit followed by a fast futuristic whoosh",
+      "prompt": "Premium cinematic brand commercial, vertical 9:16. Start in absolute black. A razor-thin electric-blue beam suddenly slices across the darkness as a powerful visual hook, briefly revealing fragments of an abstract premium geometric structure. Rapid controlled camera push-in, subtle atmospheric particles, volumetric blue light, deep blacks, realistic reflections, sophisticated high-end technology aesthetic, photorealistic, precise motion, no readable text, no letters, no logos."
+    },
+    {
+      "id": "2",
+      "duration": 3,
+      "generation_mode": "text_to_video",
+      "description": "Blue geometric light structures assemble in a vast black studio space, creating a refined sense of technology and momentum.",
+      "camera": "low-angle slow orbit through the forming structure",
+      "motion": "luminous geometric planes slide and align with smooth mechanical precision",
+      "lighting": "controlled blue edge lighting against a seamless black environment",
+      "sound": "layered metallic pulse and restrained electronic rise",
+      "prompt": "Luxury technology commercial in a vast seamless black studio, vertical 9:16. Abstract electric-blue geometric planes and luminous edges assemble with elegant mechanical precision. Low-angle camera performs a smooth cinematic orbit through the structure. Deep black negative space, controlled blue reflections, subtle volumetric atmosphere, premium global-brand visual language, realistic materials, clean composition, no readable text, no letters, no logos."
+    },
+    {
+      "id": "3",
+      "duration": 3,
+      "generation_mode": "text_to_video",
+      "description": "The camera travels through a tunnel of blue light and reflective geometric surfaces as the energy builds toward a climax.",
+      "camera": "smooth forward tracking shot with subtle parallax",
+      "motion": "blue light ribbons flow past the lens while reflective surfaces shift in synchronized motion",
+      "lighting": "cinematic blue highlights, glossy reflections, deep controlled shadows",
+      "sound": "accelerating electronic pulse with airy spatial whooshes",
+      "prompt": "High-end cinematic technology brand film, vertical 9:16. Camera glides forward through an elegant abstract corridor of electric-blue light ribbons and dark reflective geometric surfaces. Smooth parallax, synchronized motion, physically realistic reflections, deep controlled shadows, subtle haze, premium minimal design, energy gradually building toward a climax, photorealistic commercial cinematography, no readable text, no letters, no logos."
+    },
+    {
+      "id": "4",
+      "duration": 3,
+      "generation_mode": "text_to_video",
+      "description": "The moving blue energy converges into one centered luminous geometric focal point, then the surrounding motion rapidly becomes calm.",
+      "camera": "controlled pull-back into a perfectly centered composition",
+      "motion": "multiple blue light paths converge and settle, particles slow to near stillness",
+      "lighting": "strong blue rim glow fading into elegant black",
+      "sound": "energy convergence hit followed by a clean tonal resolve",
+      "prompt": "Premium cinematic brand reveal setup, vertical 9:16. Multiple elegant electric-blue light paths converge into one centered abstract geometric focal point in a pure black environment. Camera performs a controlled pull-back into a symmetrical composition. Motion gradually slows from energetic convergence to near stillness. Deep blacks, precise blue rim glow, restrained particles, luxurious minimal technology aesthetic, photorealistic, leave clean central negative space for later brand compositing, no readable text, no letters, no logos."
+    },
+    {
+      "id": "5",
+      "duration": 3,
+      "generation_mode": "text_to_video",
+      "description": "A minimal black hero-stage remains with a restrained blue halo and stable composition, designed for the original 99H.COM logo and slogan to be composited in post.",
+      "camera": "camera fully settles and remains locked",
+      "motion": "only extremely subtle atmospheric light breathing, otherwise stable",
+      "lighting": "soft electric-blue halo, black background, premium controlled glow",
+      "sound": "clean premium sonic logo tail with spacious decay",
+      "prompt": "Final luxury brand end-card background, vertical 9:16. Pure deep-black premium studio space with a restrained electric-blue halo and subtle elegant atmospheric glow. Perfectly centered clean composition with generous negative space for an original logo and slogan to be composited later. Camera completely locked, almost no motion except subtle light breathing, sophisticated high-end commercial finish, photorealistic, no generated text, no letters, no logos."
+    }
+  ]
+}
