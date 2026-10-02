@@ -1,9 +1,12 @@
 {
+  "project_id": "night-walk",
   "title": "Night Walk",
   "idea": "A man walks alone through a cinematic neon city at night.",
-  "duration_seconds": 30,
+  "duration_seconds": 18,
   "aspect_ratio": "9:16",
   "style": "cinematic, atmospheric, realistic",
   "language": "zh-CN",
-  "shots": 6
+  "shots": 6,
+  "max_attempts": 3,
+  "output_filename": "final.mp4"
 }
