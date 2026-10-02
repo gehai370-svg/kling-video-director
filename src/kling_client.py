@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 
 
@@ -7,11 +8,11 @@ class KlingClient:
 
     DEFAULT_BASE_URL = "https://api-singapore.klingai.com"
     IMAGE_TO_VIDEO_PATH = "/image-to-video/kling-3.0-turbo"
+    TASKS_PATH = "/tasks"
 
     def __init__(self):
         self.base_url = os.getenv("KLING_BASE_URL", self.DEFAULT_BASE_URL).rstrip("/")
         self.api_key = os.getenv("KLING_API_KEY", "")
-        self.status_path = os.getenv("KLING_STATUS_PATH", "")
 
     @property
     def headers(self) -> dict:
@@ -32,12 +33,11 @@ class KlingClient:
         external_task_id: str = "",
         watermark: bool = False,
     ) -> dict:
-        contents = [
-            {"type": "prompt", "text": prompt},
-            {"type": "first_frame", "url": first_frame_url},
-        ]
         payload = {
-            "contents": contents,
+            "contents": [
+                {"type": "prompt", "text": prompt},
+                {"type": "first_frame", "url": first_frame_url},
+            ],
             "settings": {
                 "resolution": resolution,
                 "duration": duration,
@@ -59,13 +59,56 @@ class KlingClient:
         response.raise_for_status()
         return response.json()
 
-    def get_task(self, task_id: str) -> dict:
-        """Task-query endpoint is configurable until its official path is added."""
-        if not self.status_path:
-            raise RuntimeError(
-                "KLING_STATUS_PATH is not configured. Add the official task-query path from Kling docs."
-            )
-        url = self.base_url + self.status_path.format(task_id=task_id)
-        response = requests.get(url, headers=self.headers, timeout=60)
+    def get_tasks_by_external_id(self, external_task_id: str) -> dict:
+        response = requests.get(
+            self.base_url + self.TASKS_PATH,
+            params={"external_task_ids": external_task_id},
+            headers=self.headers,
+            timeout=60,
+        )
         response.raise_for_status()
         return response.json()
+
+    @staticmethod
+    def _extract_task(payload: dict) -> dict:
+        data = payload.get("data")
+        if isinstance(data, list):
+            return data[0] if data else {}
+        if isinstance(data, dict):
+            # Support both a direct task object and common list wrappers.
+            for key in ("tasks", "items", "list"):
+                value = data.get(key)
+                if isinstance(value, list):
+                    return value[0] if value else {}
+            return data
+        return {}
+
+    def wait_for_task(
+        self,
+        external_task_id: str,
+        poll_seconds: int = 10,
+        timeout_seconds: int = 1800,
+    ) -> dict:
+        """Poll until Kling reports succeeded/failed or timeout is reached."""
+        deadline = time.monotonic() + timeout_seconds
+        while time.monotonic() < deadline:
+            payload = self.get_tasks_by_external_id(external_task_id)
+            if payload.get("code") not in (None, 0):
+                raise RuntimeError(
+                    f"Kling API error {payload.get('code')}: {payload.get('message', '')}"
+                )
+
+            task = self._extract_task(payload)
+            status = task.get("status")
+            if status == "succeeded":
+                return task
+            if status == "failed":
+                raise RuntimeError(f"Kling task failed: {task}")
+            if status not in (None, "submitted", "processing"):
+                raise RuntimeError(f"Unknown Kling task status: {status}")
+
+            time.sleep(poll_seconds)
+
+        raise TimeoutError(
+            f"Kling task {external_task_id} did not finish within {timeout_seconds}s"
+        )
