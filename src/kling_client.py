@@ -112,3 +112,43 @@ class KlingClient:
         raise TimeoutError(
             f"Kling task {external_task_id} did not finish within {timeout_seconds}s"
         )
+
+
+    @staticmethod
+    def get_video_output(task: dict, prefer_watermark: bool = False) -> dict:
+        """Return the first video output from a succeeded task."""
+        for output in task.get("outputs", []):
+            if output.get("type") == "video":
+                url_key = "watermark_url" if prefer_watermark else "url"
+                url = output.get(url_key) or output.get("url")
+                if not url:
+                    raise RuntimeError("Kling video output does not contain a download URL.")
+                return {
+                    "id": output.get("id"),
+                    "url": url,
+                    "duration": output.get("duration"),
+                }
+        raise RuntimeError("No video output found in Kling task response.")
+
+    def download_video(
+        self,
+        task: dict,
+        destination: str,
+        prefer_watermark: bool = False,
+    ) -> str:
+        """Download the generated video immediately; Kling result URLs are temporary."""
+        from pathlib import Path
+
+        video = self.get_video_output(task, prefer_watermark=prefer_watermark)
+        target = Path(destination)
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        # Result URLs may use hotlink protection. Try the authenticated request first.
+        with requests.get(video["url"], headers=self.headers, stream=True, timeout=300) as response:
+            response.raise_for_status()
+            with target.open("wb") as fh:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        fh.write(chunk)
+
+        return str(target)
