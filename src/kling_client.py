@@ -8,6 +8,7 @@ class KlingClient:
 
     DEFAULT_BASE_URL = "https://api-singapore.klingai.com"
     IMAGE_TO_VIDEO_PATH = "/image-to-video/kling-3.0-turbo"
+    TEXT_TO_VIDEO_PATH = "/text-to-video/kling-3.0-turbo"
     TASKS_PATH = "/tasks"
 
     def __init__(self):
@@ -22,6 +23,40 @@ class KlingClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
+
+    def create_text_to_video(
+        self,
+        prompt: str,
+        duration: int = 3,
+        resolution: str = "720p",
+        aspect_ratio: str = "9:16",
+        callback_url: str | None = None,
+        external_task_id: str = "",
+        watermark: bool = False,
+    ) -> dict:
+        payload = {
+            "prompt": prompt,
+            "options": {
+                "watermark_info": {"enabled": watermark},
+                "external_task_id": external_task_id,
+            },
+            "settings": {
+                "duration": duration,
+                "resolution": resolution,
+                "aspect_ratio": aspect_ratio,
+            },
+        }
+        if callback_url:
+            payload["options"]["callback_url"] = callback_url
+
+        response = requests.post(
+            self.base_url + self.TEXT_TO_VIDEO_PATH,
+            json=payload,
+            headers=self.headers,
+            timeout=60,
+        )
+        response.raise_for_status()
+        return response.json()
 
     def create_image_to_video(
         self,
