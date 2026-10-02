@@ -24,6 +24,36 @@ class KlingClient:
             "Authorization": f"Bearer {self.api_key}",
         }
 
+    @staticmethod
+    def _json_or_text(response) -> dict:
+        try:
+            return response.json()
+        except ValueError:
+            return {"message": response.text.strip()}
+
+    def _raise_api_error(self, response) -> None:
+        if response.ok:
+            return
+        body = self._json_or_text(response)
+        message = body.get("message") or body.get("error") or response.reason
+        code = body.get("code", response.status_code)
+        request_id = body.get("request_id") or response.headers.get("x-request-id", "")
+        detail = f"Kling API HTTP {response.status_code}; code={code}; message={message}"
+        if request_id:
+            detail += f"; request_id={request_id}"
+        raise RuntimeError(detail)
+
+    def check_auth(self) -> dict:
+        """Validate credentials without creating a generation task."""
+        response = requests.get(
+            self.base_url + self.TASKS_PATH,
+            params={"external_task_ids": "__kvd_auth_check__"},
+            headers=self.headers,
+            timeout=30,
+        )
+        self._raise_api_error(response)
+        return self._json_or_text(response)
+
     def create_text_to_video(
         self,
         prompt: str,
@@ -55,8 +85,8 @@ class KlingClient:
             headers=self.headers,
             timeout=60,
         )
-        response.raise_for_status()
-        return response.json()
+        self._raise_api_error(response)
+        return self._json_or_text(response)
 
     def create_image_to_video(
         self,
@@ -91,8 +121,8 @@ class KlingClient:
             headers=self.headers,
             timeout=60,
         )
-        response.raise_for_status()
-        return response.json()
+        self._raise_api_error(response)
+        return self._json_or_text(response)
 
     def get_tasks_by_external_id(self, external_task_id: str) -> dict:
         response = requests.get(
@@ -101,8 +131,8 @@ class KlingClient:
             headers=self.headers,
             timeout=60,
         )
-        response.raise_for_status()
-        return response.json()
+        self._raise_api_error(response)
+        return self._json_or_text(response)
 
     def list_tasks(
         self,
@@ -133,8 +163,8 @@ class KlingClient:
             headers=self.headers,
             timeout=60,
         )
-        response.raise_for_status()
-        return response.json()
+        self._raise_api_error(response)
+        return self._json_or_text(response)
 
     def list_succeeded_videos(
         self,
