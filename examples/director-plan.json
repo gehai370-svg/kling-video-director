@@ -1,0 +1,16 @@
+{
+  "project_id": "product-film-demo",
+  "title": "Product Film Demo",
+  "idea": "Create a premium cinematic launch film focused on one hero product.",
+  "duration_seconds": 15,
+  "aspect_ratio": "9:16",
+  "style": "premium commercial, cinematic, realistic",
+  "language": "zh-CN",
+  "shots": 5,
+  "requirements": [
+    "Strong hook in the opening shot",
+    "Maintain visual continuity",
+    "End with a clean hero shot"
+  ],
+  "assets": []
+}
